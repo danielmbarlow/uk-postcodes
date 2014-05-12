@@ -82,6 +82,7 @@ class Import
     url = "http://parlvid.mysociety.org/os/bdline_gb-2013-10.zip"
     file = Rails.root.join('lib', 'data', 'boundaries.zip')
     unless File.exist?(file)
+      puts("... downloading boundaries from #{url}")
       open(file, 'wb') do |file|
         file << open(url).read
       end

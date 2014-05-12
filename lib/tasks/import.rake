@@ -30,11 +30,25 @@ namespace :import do
   
   desc "Import all"
   task :all => :environment do
+    puts 'Importing postcodes'
     Import.postcodes
+    puts '... done.'
+
+    puts 'Importing codes'
     Import.codes
+    puts '... done'
+
+    puts 'Importing NI codes'
     Import.ni_codes
-    Import.electoral_district
+    puts '... done'
+
+    puts 'Importing electoral districts'
+    Import.electoraldistricts
+    puts '... done'
+
+    puts 'Importing parishes'
     Import.parishes
+    puts '... done'
   end
 
 end
