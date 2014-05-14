@@ -1,3 +1,20 @@
+# == Schema Information
+#
+# Table name: postcodes
+#
+#  id                :integer          not null, primary key
+#  postcode          :string(255)
+#  latlng            :spatial          point, 4326
+#  council           :string(255)
+#  county            :string(255)
+#  electoraldistrict :string(255)
+#  ward              :string(255)
+#  constituency      :string(255)
+#  country           :string(255)
+#  parish            :string(255)
+#  eastingnorthing   :spatial          point, 0
+#
+
 class Postcode < ActiveRecord::Base
   
   self.rgeo_factory_generator = RGeo::Geos.factory_generator
