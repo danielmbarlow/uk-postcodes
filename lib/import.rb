@@ -7,7 +7,7 @@ require 'net/http'
 require 'open-uri'
 
 class Import
-  
+
   def self.setup
     
   end
@@ -84,8 +84,18 @@ class Import
     unless File.exist?(file)
       puts("... downloading boundaries from #{url}")
       open(file, 'wb') do |file|
-        file << open(url).read
-      end
+          pbar = nil
+          file << open(url,
+                       :content_length_proc => lambda {|t|
+                         if t && 0 < t
+                           pbar = ProgressBar.create(:title => "Downloading", :total => t)
+                         end
+                       },
+                       :progress_proc => lambda {|s|
+                         pbar.progress = s if pbar
+                       }
+          ).read
+        end
     end
     file
   end
@@ -97,13 +107,18 @@ class Import
     ['dbf', 'prj', 'shp', 'shx'].each do |ext|
       filename = "#{shp}.#{ext}"
       f = destination.join(filename)
-      zip.extract("Data/#{filename}", f) unless File.exist?(f)
+      output_file = "Data/#{filename}"
+      unless File.exist?(f)
+        puts "Extracting #{output_file}"
+        zip.extract(output_file, f)
+      end
     end
   end
   
   def self.import_boundaries(filename, type)
     file = Rails.root.join('lib', 'data', filename, filename).to_s
     GeoRuby::Shp4r::ShpFile.open(file) do |shp|
+      pbar = ProgressBar.create(:title => '... boundaries', :total => shp.record_count)
       shp.each do |shape|
         name = shape.data['NAME'][0..-4]
         code = "7" + shape.data['UNIT_ID'].to_s.rjust(15, '0')
@@ -121,6 +136,8 @@ class Import
 
                           
         end
+
+        pbar.progress += 1
       end
     end
   end
