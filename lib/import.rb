@@ -12,8 +12,14 @@ class Import
     
   end
   
-  def self.postcodes
-    path = postcode_path
+  def self.postcodes(data_set=nil)
+    if data_set == :test
+      puts 'Reading TEST data'
+      path = test_postcode_path
+    else
+      path = postcode_path
+    end
+
     zip = Zip::File.open(path)
     lines = []
     zip.file.foreach("NSPL_AUG_2013_UK.csv") do |line|
@@ -61,7 +67,11 @@ class Import
       end
     end
   end
-  
+
+  def self.test_postcode_path
+    path = Rails.root.join('lib', 'data', 'test_postcodes.zip')
+  end
+
   def self.postcode_path
     path = Rails.root.join('lib', 'data', 'postcodes.zip')
   end

@@ -1,6 +1,14 @@
 require 'import'
 
 namespace :import do
+
+  namespace :test do
+    desc "Import test Postcodes"
+    task :postcodes => :environment do
+      Import.postcodes :test
+    end
+  end
+
   desc "Import Postcodes"
   task :postcodes => :environment do
     Import.postcodes
