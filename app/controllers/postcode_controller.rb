@@ -74,7 +74,7 @@ class PostcodeController < ApplicationController
       format.json
       format.xml
       format.rdf { nearest_rdf(@postcodes, :rdfxml) }
-      format.n3 { nearest_rdf(@postcode, :ntriples) } #TODO: Change this to pass @postcodeS
+      format.n3 { nearest_rdf(@postcodes, :ntriples) }
       format.csv do
         csv = []
         @postcodes.each do |postcode|
