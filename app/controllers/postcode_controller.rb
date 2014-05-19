@@ -85,8 +85,7 @@ class PostcodeController < ApplicationController
   end
 
   def get_nearest_postcodes(lat, lng, distance)
-    Postcode.where("ST_DWithin(latlng, ST_Geomfromtext('POINT(#{lat} #{lng})'), #{distance})").
-        order("ST_Distance(latlng, ST_Geomfromtext('POINT(#{lat} #{lng})'))")
+    Postcode.nearest(lat,lng,distance)
   end
 
   def reverse

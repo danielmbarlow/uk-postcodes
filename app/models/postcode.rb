@@ -22,7 +22,12 @@ class Postcode < ActiveRecord::Base
   set_rgeo_factory_for_column(:latlng, RGeo::Geographic.spherical_factory(:srid => 4326))
   
   ADMIN_AREAS = [:council, :county, :ward, :constituency, :parish, :electoral_district]
-  
+
+  def self.nearest(lat, lng, distance)
+    Postcode.where("ST_DWithin(latlng, ST_Geomfromtext('POINT(#{lat} #{lng})'), #{distance})").
+        order("ST_Distance(latlng, ST_Geomfromtext('POINT(#{lat} #{lng})'))")
+  end
+
   def lat
     self.latlng.x
   end
