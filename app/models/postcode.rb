@@ -28,6 +28,15 @@ class Postcode < ActiveRecord::Base
         order("ST_Distance(latlng, ST_Geomfromtext('POINT(#{lat} #{lng})'))")
   end
 
+  def self.nearest_postcode_areas(lat, lng, distance)
+    Postcode.select("regexp_replace(postcode,' .*', '') as postcode,
+                            ST_Geomfromtext('POINT(0.0 0.0)') as latlng, '' as council, '' as county, '' as electoraldistrict, '' as ward, '' as constituency,
+                            '' as country, '' as parish, ST_Geomfromtext('POINT(0.0 0.0)') as eastingnorthing").
+        where("ST_DWithin(latlng, ST_Geomfromtext('POINT(#{lat} #{lng})'), #{distance})").
+        group("regexp_replace(postcode,' .*', '')")#.
+        #order("ST_Distance(latlng, ST_Geomfromtext('POINT(#{lat} #{lng})'))") #TODO: Figure out how to aggregate the latlng field for the ORDER BY
+  end
+
   def lat
     self.latlng.x
   end
@@ -45,6 +54,7 @@ class Postcode < ActiveRecord::Base
   end
   
   def distance_from(lat, lng)
+    return -1 if self.lat == 0  and self.lng == 0
     d = Geodesic::dist_haversine(self.lat, self.lng, lat, lng)
     (d * 0.6214).round(4)
   end
