@@ -62,18 +62,19 @@ class PostcodeController < ApplicationController
     params[:miles] ||= params[:distance]
     
     render_error(422, "You must specify a distance") and return if params[:miles].blank?    
-    render_error(422, "The maximum radius is 5 miles") and return if params[:miles].to_i > 5
+    render_error(422, "The maximum radius is 100 miles") and return if params[:miles].to_i > 100
         
     distance = params[:miles].to_f * 1609.344
-    
-    @postcodes = get_nearest_postcodes(@lat, @lng, distance)
-        
+
+    @postcodes = params[:miles].to_i > 5 ? get_nearest_postcode_areas(@lat, @lng, distance) :
+                                                                get_nearest_postcodes(@lat, @lng, distance)
+
     respond_to do |format|
       format.html
       format.json
       format.xml
       format.rdf { nearest_rdf(@postcodes, :rdfxml) }
-      format.n3 { nearest_rdf(@postcode, :ntriples) }
+      format.n3 { nearest_rdf(@postcode, :ntriples) } #TODO: Change this to pass @postcodeS
       format.csv do
         csv = []
         @postcodes.each do |postcode|
@@ -86,6 +87,10 @@ class PostcodeController < ApplicationController
 
   def get_nearest_postcodes(lat, lng, distance)
     Postcode.nearest(lat,lng,distance)
+  end
+
+  def get_nearest_postcode_areas(lat, lng, distance)
+    Postcode.nearest_postcode_areas(lat,lng,distance)
   end
 
   def reverse
