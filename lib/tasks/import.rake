@@ -26,7 +26,10 @@ namespace :import do
   
   desc "Import boundaries"
   task :boundaries => :environment do
+    puts "Importing electoral district ..."
     Import.electoraldistricts
+
+    puts "Importing parish ..."
     Import.parishes
   end
 

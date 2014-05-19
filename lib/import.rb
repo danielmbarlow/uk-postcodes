@@ -128,7 +128,7 @@ class Import
   def self.import_boundaries(filename, type)
     file = Rails.root.join('lib', 'data', filename, filename).to_s
     GeoRuby::Shp4r::ShpFile.open(file) do |shp|
-      pbar = ProgressBar.create(:title => '... boundaries', :total => shp.record_count)
+      pbar = ProgressBar.create(:title => '... boundaries')
       shp.each do |shape|
         name = shape.data['NAME'][0..-4]
         code = "7" + shape.data['UNIT_ID'].to_s.rjust(15, '0')
@@ -147,7 +147,7 @@ class Import
                           
         end
 
-        pbar.progress += 1
+        pbar.progress += 1/shp.record_count
       end
     end
   end
