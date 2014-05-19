@@ -66,8 +66,7 @@ class PostcodeController < ApplicationController
         
     distance = params[:miles].to_f * 1609.344
     
-    @postcodes = Postcode.where("ST_DWithin(latlng, ST_Geomfromtext('POINT(#{@lat} #{@lng})'), #{distance})").
-                                order("ST_Distance(latlng, ST_Geomfromtext('POINT(#{@lat} #{@lng})'))")
+    @postcodes = get_nearest_postcodes(@lat, @lng, distance)
         
     respond_to do |format|
       format.html
@@ -84,7 +83,12 @@ class PostcodeController < ApplicationController
       end
     end
   end
-  
+
+  def get_nearest_postcodes(lat, lng, distance)
+    Postcode.where("ST_DWithin(latlng, ST_Geomfromtext('POINT(#{lat} #{lng})'), #{distance})").
+        order("ST_Distance(latlng, ST_Geomfromtext('POINT(#{lat} #{lng})'))")
+  end
+
   def reverse
     if params[:latlng]
       latlng = params[:latlng].split(",")
